@@ -12,21 +12,24 @@
                             <!-- Имя -->
                             <div class="mb-3">
                                 <label for="name" class="form-label">Имя</label>
-                                <input type="text" class="form-control" id="name" name="name" v-model="name">
+                                <input type="text" class="form-control" id="name" name="name" v-model="name"
+                                    :class="errors?.name || nameError ? 'is-invalid' : ''" @blur="nameValidate">
                                 <div id="nameError" class="text-danger">{{errors?.name}}</div>
                             </div>
 
                             <!-- Email -->
                             <div class="mb-3">
                                 <label for="email" class="form-label">Email</label>
-                                <input type="email" class="form-control" id="email" name="email" v-model="email">
+                                <input type="email" class="form-control" id="email" name="email" v-model="email"
+                                    :class="errors?.email || emailError ? 'is-invalid' : ''" @blur="emailValidate">
                                 <div id="emailError" class="text-danger">{{errors?.email}}</div>
                             </div>
 
                             <!-- Возраст -->
                             <div class="mb-3">
                                 <label for="age" class="form-label">Возраст</label>
-                                <input type="number" class="form-control" id="age" name="age" min="0" v-model="age">
+                                <input type="number" class="form-control" id="age" name="age" min="0" v-model="age"
+                                    :class="errors?.age || ageError ? 'is-invalid' : ''">
                                 <div id="ageError" class="text-danger">{{errors?.age}}</div>
                             </div>
 
@@ -52,7 +55,8 @@
                             <div class="mb-3">
                                 <label for="password" class="form-label">Пароль</label>
                                 <input type="password" class="form-control" id="password" name="password"
-                                    v-model="password">
+                                    :class="errors?.password || passwordError ? 'is-invalid' : ''" v-model="password"
+                                    @blur="passwordValidate">
                                 <div id="passwordError" class="text-danger">{{errors?.password}}</div>
                             </div>
 
@@ -60,14 +64,16 @@
                             <div class="mb-3">
                                 <label for="confirmPassword" class="form-label">Повторите пароль</label>
                                 <input type="password" class="form-control" id="confirmPassword" name="confirmPassword"
-                                    @blur.prevent="repeatValidate" v-model="password_repeat">
+                                    @blur.prevent="repeatValidate" v-model="password_repeat"
+                                    :class="errors?.password_repeat ? 'is-invalid' : ''">
                                 <div id="confirmPasswordError" class="text-danger">{{errors?.password_repeat}}</div>
                             </div>
 
                             <!-- Согласие на обработку данных -->
                             <div class="mb-3 form-check">
                                 <input type="checkbox" class="form-check-input" id="agree" name="agree"
-                                    v-model="confirm">
+                                    :class="errors?.confnirm ? 'is-invalid' : ''" v-model="confirm"
+                                    @blur="confirmValidate">
                                 <label class="form-check-label" for="agree">Я согласен на обработку персональных
                                     данных</label>
                                 <div id="agreeError" class="text-danger">{{errors?.confirm}}</div>
@@ -95,10 +101,98 @@
                 age: '123',
                 confirm: '1',
                 email: 'u1@u.com',
+                passwordInvalid: true,
+                password_repeatInvalid: true,
+                nameInvalid: true,
+                ageInvalid: true,
+                confirmInvalid: true,
+                emailInvalid: true,
                 errors: {},
             }
         },
+
         methods: {
+            passwordValidate() {
+                if (!this.password) {
+                    this.errors.password = 'Пустое поле'
+                    this.passwordInvalid = true
+                } else {
+                    this.errors.password = ''
+                    this.passwordInvalid = false
+                }
+            },
+            emailValidate() {
+                if (!this.email) {
+                    this.errors.email = 'Пустое поле'
+                    this.emailInvalid = true
+                } else {
+                    const reg = /$\w+\@{1}\w+\.{1}\w+^/
+                    if (reg.text(this.email)) {
+                        this.errors.email = ''
+                        this.emailValid = false
+
+                    } else {
+                        this.errors.email = 'Неверный формат'
+                        this.emailValid = true
+
+                    }
+                }
+            },
+            passwordValidate() {
+                if (!this.email) {
+                    this.errors.email = 'Пустое поле'
+                    this.emailInvalid = true
+                } else {
+                    const reg = /$\w+\@{1}\w+\.{1}\w+^/
+                    if (reg.text(this.email)) {
+                        this.errors.email = ''
+                        this.emailValid = false
+
+                    } else {
+                        this.errors.email = 'Неверный формат'
+                        this.emailValid = true
+
+                    }
+                }
+            },
+            nameValidate() {
+                if (!this.name) {
+                    this.errors.name = 'Пустое поле'
+                    this.nameInvalid = true
+                } else {
+                    const reg = /$[A-ZА-ЯЁ]{1}([a-zа-яё])*^/u
+                    if (reg.text(this.name)) {
+                        this.errors.name = ''
+                        this.nameInvalid = false
+
+                    } else {
+                        this.errors.name = 'Неверный формат'
+                        this.nameInvalid = true
+
+                    }
+                }
+            },
+            confirmValidate() {
+                if (!this.confirm) {
+                    this.errors.confirm = 'Надо заполнить'
+                    this.confirmInvalid = true
+                } else {
+
+                    this.errors.confirm = ''
+                    this.confirmInvalid = false
+
+
+                }
+            },
+            allValidate() {
+                return (
+                    !this.nameInvalid &&
+                    !this.emailValid &&
+                    !this.confirmInvalid &&
+                    !this.nameInvalid &&
+                    !this.password_repeatInvalid
+                );
+            },
             repeatValidate() {
                 if (this.password_repeat != this.password) {
                     this.errors.password_repeat = 'Поле равно паролю надо';

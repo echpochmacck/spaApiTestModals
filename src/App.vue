@@ -50,8 +50,8 @@
           redirect: "follow"
         };
 
-        const result = await fetch(`${this.$url}/logout`, requestOptions);
         localStorage.clear()
+        const result = await fetch(`${this.$url}/logout`, requestOptions);
         this.$token.value = '';
         this.$router.push('/');
 
